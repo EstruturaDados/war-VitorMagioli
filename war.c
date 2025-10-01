@@ -18,6 +18,33 @@ void limparBufferEntrada(){
     while((c = getchar()) != '\n' && c != EOF);
 }
 
+void exibirMenu(){
+    //menu de interface do usuário
+        printf("==========================\n");
+        printf("------ JOGO WAR ----------\n");
+        printf("==========================\n");
+        printf("1. Cadastrar Território\n");
+        printf("2. Listar Territórios Cadastrados\n");
+        printf("0. Sair\n");
+        printf("---------------------------\n");
+}
+
+void cadastrarTerritorio(){
+    //opção de cadastrar novo território
+    printf("================================\n");
+    printf("Cadastrar Novo Território\n");
+    printf("\n");
+}
+
+void listarTerritorios(){
+    //mostra a lista de terrirórios 
+    printf("\n");
+    printf("--------------------------------------\n");
+    printf("---Lista de Territórios Cadastrados---\n");
+    printf("--------------------------------------\n");
+    printf("\n");
+}
+
 int main(){
     //para ler os caracteres como acento, cedilha etc...
     setlocale(LC_ALL, "Portuguese");
@@ -30,14 +57,8 @@ int main(){
 
     do
     {
-        //menu de interface do usuário
-        printf("=======================\n");
-        printf("------ JOGO WAR -------\n");
-        printf("=======================\n");
-        printf("1. Cadastrar Território\n");
-        printf("2. Listar Territórios Cadastrados\n");
-        printf("0. Sair\n");
-        printf("-----------------------\n");
+        //chama a função para exibir o menu
+        exibirMenu();
         printf("Escolha uma opção: ");
         
         //lê o dado de entrada
@@ -48,10 +69,8 @@ int main(){
         switch (opcao)
         {
         case 1:
-            //opção de cadastrar novo território
-            printf("=======================\n");
-            printf("Cadastrar Novo Território\n");
-            printf("\n");
+            //chama a função para exibir o cabeçalho
+            cadastrarTerritorio();
 
             //condição para saber se a constante definida anteriormente excedeu o limite de territórios
             //caso tenha espaço é permitido cadastrar novos territórios
@@ -89,13 +108,8 @@ int main(){
             break;
 
         case 2:
-            //mostra a lista de terrirórios 
-            printf("\n");
-            printf("--------------------------------------\n");
-            printf("---Lista de Territórios Cadastrados---\n");
-            printf("--------------------------------------\n");
-            printf("\n");
-            
+            //chama a função para exibir o cabeçalho
+            listarTerritorios();
             if (totalTerritorios == 0) {
                 printf("Nenhum Território Cadastrado!\n");
                 printf("\n");

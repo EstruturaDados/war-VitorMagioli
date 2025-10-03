@@ -182,6 +182,36 @@ int main(){
             getchar(); //pausa para o usuário ler a mensagem antes de voltar ao menu
             break;
 
+        case 3:
+            //Ataque
+            int id_ataque, id_defesa;
+
+            printf("--- Lista de Territórios ---\n");
+            //imprime os territórios para os usuários escolherem
+            for (int i = 0; i < totalTerritorios; i++) {
+                printf("%d: %s (%d tropas)\n", i + 1, war[i].nome, war[i].tropas);
+            }
+            printf("--------------------------\n");
+            
+            printf("Digite o número do território ATACANTE: ");
+            scanf("%d", &id_ataque);
+            limparBufferEntrada();
+
+            printf("Digite o número do território DEFENSOR: ");
+            scanf("%d", &id_defesa);
+            limparBufferEntrada();
+
+            if(id_ataque > 0 && id_ataque <= totalTerritorios && id_defesa > 0 && id_defesa <= totalTerritorios && id_ataque != id_defesa){
+                atacar(&war[id_ataque - 1], &war[id_defesa - 1]);
+            } else{
+                printf("Opção Inválida!");
+            }
+
+            printf("Pressione ENTER para continuar...");
+            getchar();
+
+            break;
+
         case 0:
             //sair do sistema
             printf("Saindo do Jogo...");

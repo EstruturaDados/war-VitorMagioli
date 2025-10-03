@@ -44,7 +44,7 @@ void listarTerritorios(){
     printf("--------------------------------------\n");
     printf("\n");
 }
-
+//função para atacar territórios
 void atacar(struct Territorio* atacante, struct Territorio* defensor){
     //função para realizar o ataque entre territórios
     printf("\n------ --- Ataque Iniciado --- ------\n");
@@ -53,21 +53,49 @@ void atacar(struct Territorio* atacante, struct Territorio* defensor){
     printf("--------------------------------------\n");
 
     printf("%s está atacando %s!\n", atacante->nome, defensor->nome);
-
+    //verifica se o território atacante tem mais de 1 tropa
+    //VERIFICAR ESSA LÓGICA PARA SABER O MÍNIMO DE TROPAS E QUANDO O USUÁRIO PERDE
     if(atacante->tropas <=1){
-        printf("Ataque falhou! O %s deve ter mais de 1 tropa.\n", atacante->nome);
+        printf("Ataque falhou! O %s precisa ter mais de 1 tropa para atacar.\n", atacante->nome);
         return;
     }
-    
+    //verifica se o território defensor tem pelo menos 1 tropa
+    if(defensor->tropas <=0){
+        printf("Ataque falhou! O %s não tem tropas para defender.\n", defensor->nome);
+        return;
+    }
     int dadoAtaque = (rand() % 6) + 1; // Gera um número aleatório entre 1 e 6
     int dadoDefesa = (rand() % 6) + 1; // Gera um número aleatório entre 1 e 6
 
-    printf("Jogo de dados: %s rolou %d\n, %s rolou %d\n", atacante->nome, dadoAtaque, defensor->nome, dadoDefesa);
+    printf("Jogo de dados:\n %s rolou %d\n%s rolou %d\n", atacante->nome, dadoAtaque, defensor->nome, dadoDefesa);
 
     if (dadoAtaque > dadoDefesa){
         defensor->tropas -= 1;
         printf("Ataque bem-sucedido! %s perdeu 1 tropa. Tropas restantes: %d\n", defensor->nome, defensor->tropas);
         printf("--- FIM DO ATAQUE ---\n");
+
+        //Lógica de conquista do território
+        if (defensor->tropas ==0){
+            printf("TERRITÓRIO CONQUISTADO!\n");
+            printf("%s foi conquistado por %s!\n", defensor->nome, atacante->nome);
+            
+            // 1. Muda a cor do território usando strcpy (string copy) - cópia segura de strings
+            strcpy(defensor->cor, atacante->cor);
+            printf("%s agora pertence à cor %s.\n", defensor->nome, defensor->cor);
+
+            // 2. Move metade das tropas restantes do atacante
+            // O atacante deve deixar pelo menos 1 tropa para trás.
+            int tropas_para_mover = atacante->tropas / 2;
+            if (tropas_para_mover == 0) {
+                 tropas_para_mover = 1; // Garante que pelo menos 1 tropa se mova
+            }
+
+            printf("Transferindo %d tropas de %s para %s.\n", tropas_para_mover, atacante->nome, defensor->nome);
+            
+            defensor->tropas = tropas_para_mover;
+            atacante->tropas -= tropas_para_mover;
+        }
+        // Fim da lógica de conquista do território 
 
     } else {
         atacante->tropas -= 1;
@@ -75,13 +103,14 @@ void atacar(struct Territorio* atacante, struct Territorio* defensor){
         printf("--- FIM DO ATAQUE ---\n");
 
     }
-    if (defensor->tropas <= 0){
-        printf("%s foi conquistado por %s!\n", defensor->nome, atacante->nome);
-        defensor->tropas = 1; // O território conquistado começa com 1 tropa
-        atacante->tropas -= 1; // O atacante deve mover uma tropa para o território conquistado
-    }  
+    
     printf("--------------------------------------\n");
     
+}
+//função para liberar a memória alocada
+void LiberarMemoria(struct Territorio* mapa){
+    free(mapa);
+    printf("\nLiberando a memória alocada para o jogo...\n");
 }
 
 int main(){
@@ -185,16 +214,18 @@ int main(){
 
         case 3:
             //Ataque
-            int id_ataque, id_defesa;
+            
+            int id_ataque, id_defesa;//variaveis para receber as escolhas do usuário
             printf("============================\n");
             printf("MAPA DO MUNDO - ESTADO ATUAL\n");
             printf("============================\n");
             //imprime os territórios para os usuários escolherem
             for (int i = 0; i < totalTerritorios; i++) {
-                printf("%d: %s (%d tropas)\n", i + 1, war[i].nome, war[i].tropas);
-            }
+                printf("%d: %s (Cor: %s, Tropas: %d)\n", i + 1, war[i].nome, war[i].cor, war[i].tropas);
+            }//fim do for
             printf("---------------------------\n");
             
+            //recebe os dados de entrada do usuário
             printf("Digite o número do território ATACANTE: ");
             scanf("%d", &id_ataque);
             limparBufferEntrada();
@@ -203,9 +234,12 @@ int main(){
             scanf("%d", &id_defesa);
             limparBufferEntrada();
 
-            if(id_ataque > 0 && id_ataque <= totalTerritorios && id_defesa > 0 && id_defesa <= totalTerritorios && id_ataque != id_defesa){
-                atacar(&war[id_ataque - 1], &war[id_defesa - 1]);
-            } else{
+            //verifica se os dados inseridos são válidos
+            //Se o id_ataque e id_defesa estiverem dentro do intervalo  não forem iguais e forem de cores diferentes, chama a função atacar
+            if(id_ataque > 0 && id_ataque <= totalTerritorios && id_defesa > 0 && id_defesa <= totalTerritorios && id_ataque != id_defesa && (strcmp(war[id_ataque - 1].cor, war[id_defesa - 1].cor) != 0)){
+                atacar(&war[id_ataque - 1], &war[id_defesa - 1]);//transforma a escolha do usuário para o índice correto do array e chama a função atacar
+            }                         
+            else{
                 printf("Opção Inválida!");
             }
 
@@ -230,7 +264,7 @@ int main(){
     } while (opcao != 0);
 
     //libera a memória alocada para evitar vazamentos de memória
-    free(war);
+    LiberarMemoria(war);
     
     return 0;
 

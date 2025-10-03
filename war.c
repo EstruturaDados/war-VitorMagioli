@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
-
-//constante para definir o número máximo de territórios
-#define MAX_TERR 5 
+#include <stdlib.h>
+#include <time.h>
 
 //construção da struct que armazenará os territórios
 struct Territorio {
@@ -45,14 +44,70 @@ void listarTerritorios(){
     printf("\n");
 }
 
+void atacar(struct Territorio* atacante, struct Territorio* defensor){
+    //função para realizar o ataque entre territórios
+    printf("\n------ --- Ataque Iniciado --- ------\n");
+    printf("Território Atacante: %s\n", atacante->nome);
+    printf("Território Defensor: %s\n", defensor->nome);
+    printf("--------------------------------------\n");
+
+    printf("%s está atacando %s!\n", atacante->nome, defensor->nome);
+
+    if(atacante->tropas <=1){
+        printf("Ataque falhou! O %s deve ter mais de 1 tropa.\n");
+        return;
+    }
+    
+    int dadoAtaque = (rand() % 6) + 1; // Gera um número aleatório entre 1 e 6
+    int dadoDefesa = (rand() % 6) + 1; // Gera um número aleatório entre 1 e 6
+
+    printf("Jogo de dados: %s rolou %d\n, %s rolou %d\n", atacante->nome, dadoAtaque, defensor->nome, dadoDefesa);
+
+    if (dadoAtaque > dadoDefesa){
+        defensor->tropas -= 1;
+        printf("Ataque bem-sucedido! %s perdeu 1 tropa. Tropas restantes: %d\n", defensor->nome, defensor->tropas);
+        printf("--- FIM DO ATAQUE ---\n");
+
+    } else {
+        atacante->tropas -= 1;
+        printf("Defesa bem-sucedida! %s perdeu 1 tropa. Tropas restantes: %d\n", atacante->nome, atacante->tropas);
+        printf("--- FIM DO ATAQUE ---\n");
+
+    }
+    if (defensor->tropas <= 0){
+        printf("%s foi conquistado por %s!\n", defensor->nome, atacante->nome);
+        defensor->tropas = 1; // O território conquistado começa com 1 tropa
+        atacante->tropas -= 1; // O atacante deve mover uma tropa para o território conquistado
+    }  
+    printf("--------------------------------------\n");
+    
+}
+
 int main(){
     //para ler os caracteres como acento, cedilha etc...
     setlocale(LC_ALL, "Portuguese");
 
-    //cria a struct na função principal
-    struct Territorio war[MAX_TERR];
+    srand(time(NULL)); // Inicializa a semente de números aleatórios
 
+    //solicita a capacidade total de territórios ao usuário
     int totalTerritorios = 0;
+    printf("Digite o número máximo de territórios: ");
+    scanf("%d", &totalTerritorios);
+
+    //cria a struct na função principal vazia para receber o total de Territorios fornecida pelo usuário
+    struct Territorio *war = NULL;
+
+    //aloca o espaço na memória usando calloc para aumentar a segurança e evitar erros de buffer
+    war = (struct Territorio *) calloc(totalTerritorios, sizeof(struct Territorio));
+
+    //Verificação de segurança para mostrar se a memória foi alocada corretamente e caso não, exibir uma mensagem de erro.
+    if (war == NULL){
+        printf("Erro: Falha ao alocar memória!\n");
+        return 1; //encerra o programa com erro.
+    } 
+    
+    printf("Memória para %d territórios alocada e limpa com sucesso.\n", totalTerritorios);
+    
     int opcao = 0;
 
     do
@@ -74,33 +129,28 @@ int main(){
 
             //condição para saber se a constante definida anteriormente excedeu o limite de territórios
             //caso tenha espaço é permitido cadastrar novos territórios
-            if (totalTerritorios < MAX_TERR)
+            for (int i = 0; i < totalTerritorios; i++)
             {
+                printf("Território %d\n", i+1);
                 printf("Nome: ");
                 //função fgets para ler as strings possui mais segurança do que a scanf e evita o buffer overflow
-                fgets(war[totalTerritorios].nome, sizeof(war[totalTerritorios].nome), stdin); 
+                fgets(war[i].nome, sizeof(war[i].nome), stdin); 
                 printf("Cor: ");
-                fgets(war[totalTerritorios].cor, sizeof(war[totalTerritorios].cor), stdin);
+                fgets(war[i].cor, sizeof(war[i].cor), stdin);
                 
                 //remove o caractere de quebra de linha (\n) do final das strings.
-                war[totalTerritorios].nome[strcspn(war[totalTerritorios].nome, "\n")] = '\0';
-                war[totalTerritorios].cor[strcspn(war[totalTerritorios].cor, "\n")] = '\0';
+                war[i].nome[strcspn(war[i].nome, "\n")] = '\0';
+                war[i].cor[strcspn(war[i].cor, "\n")] = '\0';
 
                 printf("Total de Tropas: ");
-                scanf("%d", &war[totalTerritorios].tropas);
+                scanf("%d", &war[i].tropas);
 
                 limparBufferEntrada();
-
-                totalTerritorios++; //incrementa a variável para inserção do próximo território
 
                 printf("Território Cadastrado!\n");
                 printf("\n");
 
-            } else {
-                //caso o totalTerritorios seja maior que o máximo
-                printf("Não é possível cadastrar mais territórios.\n");
-                printf("\n");
-            }
+            } //fim do for
             
             printf("Pressione ENTER para continuar...");
             printf("\n");
@@ -146,6 +196,9 @@ int main(){
         }
 
     } while (opcao != 0);
+
+    //libera a memória alocada para evitar vazamentos de memória
+    free(war);
     
     return 0;
 

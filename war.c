@@ -24,6 +24,7 @@ void exibirMenu(){
         printf("==========================\n");
         printf("1. Cadastrar Território\n");
         printf("2. Listar Territórios Cadastrados\n");
+        printf("3. Jogar\n");
         printf("0. Sair\n");
         printf("---------------------------\n");
 }
@@ -54,7 +55,7 @@ void atacar(struct Territorio* atacante, struct Territorio* defensor){
     printf("%s está atacando %s!\n", atacante->nome, defensor->nome);
 
     if(atacante->tropas <=1){
-        printf("Ataque falhou! O %s deve ter mais de 1 tropa.\n");
+        printf("Ataque falhou! O %s deve ter mais de 1 tropa.\n", atacante->nome);
         return;
     }
     
@@ -185,13 +186,14 @@ int main(){
         case 3:
             //Ataque
             int id_ataque, id_defesa;
-
-            printf("--- Lista de Territórios ---\n");
+            printf("============================\n");
+            printf("MAPA DO MUNDO - ESTADO ATUAL\n");
+            printf("============================\n");
             //imprime os territórios para os usuários escolherem
             for (int i = 0; i < totalTerritorios; i++) {
                 printf("%d: %s (%d tropas)\n", i + 1, war[i].nome, war[i].tropas);
             }
-            printf("--------------------------\n");
+            printf("---------------------------\n");
             
             printf("Digite o número do território ATACANTE: ");
             scanf("%d", &id_ataque);

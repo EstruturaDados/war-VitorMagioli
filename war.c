@@ -23,6 +23,7 @@ struct Jogador {
 
 void limparBufferEntrada();
 void exibirMenu();
+void exibirMissao(const char* missao); 
 void atribuirMissao(char** destino, const char* missoes[], int totalMissoes);
 int verificarMissao(const char* missao, const char* corDoJogador, struct Territorio* mapa, int territoriosCadastrados);
 void cadastrarJogadores(struct Jogador* jogadores, int numJogadores, const char* missoes[], int totalMissoes);
@@ -80,6 +81,7 @@ int main() {
     int opcao = -1;
     int turno = 0;
     int gameOver = 0;
+    int id_atacante, id_defesa;
 
     do {
         int jogadorAtual = turno % numJogadores;
@@ -139,7 +141,7 @@ int main() {
             }
 
             case 3: { // Atacar (renomeado de "Jogar" para "Atacar")
-                if (territoriosCadastrados < 2) {
+                    if (territoriosCadastrados < 2) {
                     printf("É preciso ter pelo menos 2 territórios cadastrados para atacar.\n");
                     printf("Pressione ENTER para continuar...");
                     getchar();
@@ -367,6 +369,11 @@ int verificarMissao(const char* missao, const char* corDoJogador, struct Territo
     }
     return 0;
 }
+
+void exibirMissao(const char* missao) { 
+    printf("Sua missão secreta é: \"%s\"\n", missao);
+}
+
 
 void cadastrarJogadores(struct Jogador* jogadores, int numJogadores, const char* missoes[], int totalMissoes) {
     printf("\n--- CADASTRO DE JOGADORES ---\n");
